@@ -40,9 +40,9 @@ class Blockcontactinfos extends Module
 	public function __construct()
 	{
 		$this->name = 'blockcontactinfos';
-		$this->author = 'PrestaShop';
+		$this->author = 'thirty bees';
 		$this->tab = 'front_office_features';
-		$this->version = '1.2.1';
+		$this->version = '2.0.0';
 
 		$this->bootstrap = true;
 		parent::__construct();	
