@@ -6,7 +6,7 @@ tags:
   - cms pages
   - cms
   - cms links
-short_description: The block contact infos allows you to enter contact information for your site's customer service.
+description_short: The block contact infos allows you to enter contact information for your site's customer service.
 description: description.md
 images:
   - image-1.png
