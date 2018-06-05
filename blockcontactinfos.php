@@ -41,12 +41,14 @@ class Blockcontactinfos extends Module
 		$this->author = 'thirty bees';
 		$this->tab = 'front_office_features';
 		$this->version = '2.0.0';
+		$this->need_instance = 1;
 
 		$this->bootstrap = true;
 		parent::__construct();
 
 		$this->displayName = $this->l('Block Contact Infos');
 		$this->description = $this->l('This module will allow you to display your e-store\'s contact information in a customizable block.');
+		$this->tb_versions_compliancy = '> 1.0.0';
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
 	}
 
