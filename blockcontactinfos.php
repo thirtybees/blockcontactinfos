@@ -40,7 +40,7 @@ class Blockcontactinfos extends Module
 		$this->name = 'blockcontactinfos';
 		$this->author = 'thirty bees';
 		$this->tab = 'front_office_features';
-		$this->version = '2.0.1';
+		$this->version = '2.0.2';
 		$this->need_instance = 1;
 
 		$this->bootstrap = true;
