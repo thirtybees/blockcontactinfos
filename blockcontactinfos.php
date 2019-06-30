@@ -75,8 +75,9 @@ class Blockcontactinfos extends Module
 		$html = '';
 		if (Tools::isSubmit('submitModule'))
 		{
-			foreach (Blockcontactinfos::$contact_fields as $field)
-				Configuration::updateValue($field, Tools::getValue($field));
+			foreach (Blockcontactinfos::$contact_fields as $field) {
+				Configuration::updateValue($field, Tools::getValue($field), true);
+			}
 			$this->_clearCache('blockcontactinfos.tpl');
 			$html = $this->displayConfirmation($this->l('Configuration updated'));
 		}
