@@ -41,7 +41,7 @@ class Blockcontactinfos extends Module
 		$this->author = 'thirty bees';
 		$this->tab = 'front_office_features';
 		$this->version = '2.0.3';
-		$this->need_instance = 1;
+		$this->need_instance = false;
 
 		$this->bootstrap = true;
 		parent::__construct();
