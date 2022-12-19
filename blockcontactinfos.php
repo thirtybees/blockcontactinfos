@@ -32,7 +32,7 @@ class Blockcontactinfos extends Module
     /**
      * @var string[]
      */
-    protected static $contact_fields = [
+    const CONTACT_FIELDS = [
         'BLOCKCONTACTINFOS_COMPANY',
         'BLOCKCONTACTINFOS_ADDRESS',
         'BLOCKCONTACTINFOS_PHONE',
@@ -83,7 +83,7 @@ class Blockcontactinfos extends Module
      */
     public function uninstall()
     {
-        foreach (Blockcontactinfos::$contact_fields as $field) {
+        foreach (static::CONTACT_FIELDS as $field) {
             Configuration::deleteByName($field);
         }
         return (parent::uninstall());
@@ -98,7 +98,7 @@ class Blockcontactinfos extends Module
     {
         $html = '';
         if (Tools::isSubmit('submitModule')) {
-            foreach (Blockcontactinfos::$contact_fields as $field) {
+            foreach (static::CONTACT_FIELDS as $field) {
                 Configuration::updateValue($field, Tools::getValue($field), true);
             }
             $this->_clearCache('blockcontactinfos.tpl');
@@ -124,7 +124,7 @@ class Blockcontactinfos extends Module
     public function hookFooter($params)
     {
         if (!$this->isCached('blockcontactinfos.tpl', $this->getCacheId())) {
-            foreach (Blockcontactinfos::$contact_fields as $field) {
+            foreach (static::CONTACT_FIELDS as $field) {
                 $this->smarty->assign(strtolower($field), Configuration::get($field));
             }
         }
@@ -191,7 +191,7 @@ class Blockcontactinfos extends Module
             'languages' => $controller->getLanguages(),
             'id_language' => $this->context->language->id
         ];
-        foreach (Blockcontactinfos::$contact_fields as $field) {
+        foreach (static::CONTACT_FIELDS as $field) {
             $helper->tpl_vars['fields_value'][$field] = Tools::getValue($field, Configuration::get($field));
         }
         return $helper->generateForm([$fields_form]);
