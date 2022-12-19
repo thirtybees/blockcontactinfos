@@ -32,12 +32,12 @@ class Blockcontactinfos extends Module
     /**
      * @var string[]
      */
-    protected static $contact_fields = array(
+    protected static $contact_fields = [
         'BLOCKCONTACTINFOS_COMPANY',
         'BLOCKCONTACTINFOS_ADDRESS',
         'BLOCKCONTACTINFOS_PHONE',
         'BLOCKCONTACTINFOS_EMAIL',
-    );
+    ];
 
     /**
      * @throws PrestaShopDatabaseException
@@ -58,7 +58,7 @@ class Blockcontactinfos extends Module
         $this->description = $this->l('This module will allow you to display your e-store\'s contact information in a customizable block.');
         $this->tb_versions_compliancy = '> 1.0.0';
         $this->tb_min_version = '1.0.0';
-        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
+        $this->ps_versions_compliancy = ['min' => '1.6', 'max' => '1.6.99.99'];
     }
 
     /**
@@ -138,39 +138,39 @@ class Blockcontactinfos extends Module
      */
     public function renderForm()
     {
-        $fields_form = array(
-            'form' => array(
-                'legend' => array(
+        $fields_form = [
+            'form' => [
+                'legend' => [
                     'title' => $this->l('Settings'),
                     'icon' => 'icon-cogs'
-                ),
-                'input' => array(
-                    array(
+                ],
+                'input' => [
+                    [
                         'type' => 'text',
                         'label' => $this->l('Company name'),
                         'name' => 'BLOCKCONTACTINFOS_COMPANY',
-                    ),
-                    array(
+                    ],
+                    [
                         'type' => 'textarea',
                         'label' => $this->l('Address'),
                         'name' => 'BLOCKCONTACTINFOS_ADDRESS',
-                    ),
-                    array(
+                    ],
+                    [
                         'type' => 'text',
                         'label' => $this->l('Phone number'),
                         'name' => 'BLOCKCONTACTINFOS_PHONE',
-                    ),
-                    array(
+                    ],
+                    [
                         'type' => 'text',
                         'label' => $this->l('Email'),
                         'name' => 'BLOCKCONTACTINFOS_EMAIL',
-                    ),
-                ),
-                'submit' => array(
+                    ],
+                ],
+                'submit' => [
                     'title' => $this->l('Save')
-                )
-            ),
-        );
+                ]
+            ],
+        ];
 
         /** @var AdminController $controller */
         $controller = $this->context->controller;
@@ -186,14 +186,14 @@ class Blockcontactinfos extends Module
         $helper->submit_action = 'submitModule';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->tpl_vars = array(
-            'fields_value' => array(),
+        $helper->tpl_vars = [
+            'fields_value' => [],
             'languages' => $controller->getLanguages(),
             'id_language' => $this->context->language->id
-        );
+        ];
         foreach (Blockcontactinfos::$contact_fields as $field) {
             $helper->tpl_vars['fields_value'][$field] = Tools::getValue($field, Configuration::get($field));
         }
-        return $helper->generateForm(array($fields_form));
+        return $helper->generateForm([$fields_form]);
     }
 }
