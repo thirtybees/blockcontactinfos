@@ -23,8 +23,9 @@
  * PrestaShop is an internationally registered trademark of PrestaShop SA.
  */
 
-if (!defined('_CAN_LOAD_FILES_'))
+if (!defined('_CAN_LOAD_FILES_')) {
     exit;
+}
 
 class Blockcontactinfos extends Module
 {
@@ -82,8 +83,9 @@ class Blockcontactinfos extends Module
      */
     public function uninstall()
     {
-        foreach (Blockcontactinfos::$contact_fields as $field)
+        foreach (Blockcontactinfos::$contact_fields as $field) {
             Configuration::deleteByName($field);
+        }
         return (parent::uninstall());
     }
 
@@ -121,9 +123,11 @@ class Blockcontactinfos extends Module
      */
     public function hookFooter($params)
     {
-        if (!$this->isCached('blockcontactinfos.tpl', $this->getCacheId()))
-            foreach (Blockcontactinfos::$contact_fields as $field)
+        if (!$this->isCached('blockcontactinfos.tpl', $this->getCacheId())) {
+            foreach (Blockcontactinfos::$contact_fields as $field) {
                 $this->smarty->assign(strtolower($field), Configuration::get($field));
+            }
+        }
         return $this->display(__FILE__, 'blockcontactinfos.tpl', $this->getCacheId());
     }
 
@@ -185,8 +189,9 @@ class Blockcontactinfos extends Module
             'languages' => $this->context->controller->getLanguages(),
             'id_language' => $this->context->language->id
         );
-        foreach (Blockcontactinfos::$contact_fields as $field)
+        foreach (Blockcontactinfos::$contact_fields as $field) {
             $helper->tpl_vars['fields_value'][$field] = Tools::getValue($field, Configuration::get($field));
+        }
         return $helper->generateForm(array($fields_form));
     }
 }
