@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2017-2019 thirty bees
+ * Copyright (C) 2017-2024 thirty bees
  * Copyright (C) 2007-2016 PrestaShop SA
  *
  * thirty bees is an extension to the PrestaShop software by PrestaShop SA.
@@ -17,7 +17,7 @@
  *
  * @author    thirty bees <modules@thirtybees.com>
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2017-2019 thirty bees
+ * @copyright 2017-2024 thirty bees
  * @copyright 2007-2016 PrestaShop SA
  * @license   Academic Free License (AFL 3.0)
  * PrestaShop is an internationally registered trademark of PrestaShop SA.
@@ -68,10 +68,14 @@ class Blockcontactinfos extends Module
      */
     public function install()
     {
-        Configuration::updateValue('BLOCKCONTACTINFOS_COMPANY', Configuration::get('PS_SHOP_NAME'));
-        Configuration::updateValue('BLOCKCONTACTINFOS_ADDRESS', trim(preg_replace('/ +/', ' ', Configuration::get('PS_SHOP_ADDR1') . ' ' . Configuration::get('PS_SHOP_ADDR2') . "\n" . Configuration::get('PS_SHOP_CODE') . ' ' . Configuration::get('PS_SHOP_CITY') . "\n" . Country::getNameById(Configuration::get('PS_LANG_DEFAULT'), Configuration::get('PS_SHOP_COUNTRY_ID')))));
-        Configuration::updateValue('BLOCKCONTACTINFOS_PHONE', Configuration::get('PS_SHOP_PHONE'));
-        Configuration::updateValue('BLOCKCONTACTINFOS_EMAIL', Configuration::get('PS_SHOP_EMAIL'));
+        $defaultLang = (int)Configuration::get('PS_LANG_DEFAULT');
+        foreach (Language::getLanguages(false) as $lang) {
+            $idLang = (int)$lang['id_lang'];
+            Configuration::updateValue('BLOCKCONTACTINFOS_COMPANY', [$idLang => Configuration::get('PS_SHOP_NAME')]);
+            Configuration::updateValue('BLOCKCONTACTINFOS_ADDRESS', [$idLang => trim(preg_replace('/ +/', ' ', Configuration::get('PS_SHOP_ADDR1') . ' ' . Configuration::get('PS_SHOP_ADDR2') . "\n" . Configuration::get('PS_SHOP_CODE') . ' ' . Configuration::get('PS_SHOP_CITY') . "\n" . Country::getNameById($idLang, Configuration::get('PS_SHOP_COUNTRY_ID'))))]);
+            Configuration::updateValue('BLOCKCONTACTINFOS_PHONE', [$idLang => Configuration::get('PS_SHOP_PHONE')]);
+            Configuration::updateValue('BLOCKCONTACTINFOS_EMAIL', [$idLang => Configuration::get('PS_SHOP_EMAIL')]);
+        }
         $this->_clearCache('blockcontactinfos.tpl');
         return (parent::install() && $this->registerHook('header') && $this->registerHook('footer'));
     }
@@ -98,8 +102,12 @@ class Blockcontactinfos extends Module
     {
         $html = '';
         if (Tools::isSubmit('submitModule')) {
-            foreach (static::CONTACT_FIELDS as $field) {
-                Configuration::updateValue($field, Tools::getValue($field), true);
+            foreach (Language::getLanguages(false) as $lang) {
+                $idLang = (int)$lang['id_lang'];
+                foreach (static::CONTACT_FIELDS as $field) {
+                    $value = Tools::getValue($field.'_'.$idLang);
+                    Configuration::updateValue($field, [$idLang => $value]);
+                }
             }
             $this->_clearCache('blockcontactinfos.tpl');
             $html = $this->displayConfirmation($this->l('Configuration updated'));
@@ -125,7 +133,7 @@ class Blockcontactinfos extends Module
     {
         if (!$this->isCached('blockcontactinfos.tpl', $this->getCacheId())) {
             foreach (static::CONTACT_FIELDS as $field) {
-                $this->smarty->assign(strtolower($field), Configuration::get($field));
+                $this->smarty->assign(strtolower($field), Configuration::get($field, $this->context->language->id));
             }
         }
         return $this->display(__FILE__, 'blockcontactinfos.tpl', $this->getCacheId());
@@ -138,7 +146,7 @@ class Blockcontactinfos extends Module
      */
     public function renderForm()
     {
-        $fields_form = [
+        $fieldsForm = [
             'form' => [
                 'legend' => [
                     'title' => $this->l('Settings'),
@@ -149,21 +157,25 @@ class Blockcontactinfos extends Module
                         'type' => 'text',
                         'label' => $this->l('Company name'),
                         'name' => 'BLOCKCONTACTINFOS_COMPANY',
+                        'lang' => true,
                     ],
                     [
                         'type' => 'textarea',
                         'label' => $this->l('Address'),
                         'name' => 'BLOCKCONTACTINFOS_ADDRESS',
+                        'lang' => true,
                     ],
                     [
                         'type' => 'text',
                         'label' => $this->l('Phone number'),
                         'name' => 'BLOCKCONTACTINFOS_PHONE',
+                        'lang' => true,
                     ],
                     [
                         'type' => 'text',
                         'label' => $this->l('Email'),
                         'name' => 'BLOCKCONTACTINFOS_EMAIL',
+                        'lang' => true,
                     ],
                 ],
                 'submit' => [
@@ -187,13 +199,28 @@ class Blockcontactinfos extends Module
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars = [
-            'fields_value' => [],
-            'languages' => $controller->getLanguages(),
-            'id_language' => $this->context->language->id
+            'fields_value' => $this->getConfigFieldsValues(),
+            'languages' => $this->context->controller->getLanguages(),
+            'id_language' => $this->context->language->id,
         ];
+
+        return $helper->generateForm([$fieldsForm]);
+    }
+
+    /**
+     * Get the values of the configuration fields.
+     *
+     * @return array
+     */
+    private function getConfigFieldsValues()
+    {
+        $fields = [];
         foreach (static::CONTACT_FIELDS as $field) {
-            $helper->tpl_vars['fields_value'][$field] = Tools::getValue($field, Configuration::get($field));
+            foreach (Language::getLanguages(false) as $lang) {
+                $idLang = (int)$lang['id_lang'];
+                $fields[$field][$idLang] = Tools::getValue($field.'_'.$idLang, Configuration::get($field, $idLang));
+            }
         }
-        return $helper->generateForm([$fields_form]);
+        return $fields;
     }
 }
